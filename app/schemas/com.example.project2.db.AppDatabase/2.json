@@ -1,0 +1,491 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "5cc2f774c34299146d13538a6fb55134",
+    "entities": [
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT, `password` TEXT, `isAdmin` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isAdmin",
+            "columnName": "isAdmin",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "pokemon",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pokemon_id` INTEGER NOT NULL, `name` TEXT, `height` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `region_id` INTEGER NOT NULL, PRIMARY KEY(`pokemon_id`), FOREIGN KEY(`region_id`) REFERENCES `region`(`region_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pokemonId",
+            "columnName": "pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weight",
+            "columnName": "weight",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "regionId",
+            "columnName": "region_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pokemon_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pokemon_region_id",
+            "unique": false,
+            "columnNames": [
+              "region_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pokemon_region_id` ON `${TABLE_NAME}` (`region_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "region",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "region_id"
+            ],
+            "referencedColumns": [
+              "region_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "region",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`region_id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`region_id`))",
+        "fields": [
+          {
+            "fieldPath": "regionId",
+            "columnName": "region_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "region_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`type_id` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`type_id`))",
+        "fields": [
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "type_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "move",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`move_id` INTEGER NOT NULL, `name` TEXT, `power` INTEGER NOT NULL, `type_id` INTEGER NOT NULL, PRIMARY KEY(`move_id`), FOREIGN KEY(`type_id`) REFERENCES `type`(`type_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "moveId",
+            "columnName": "move_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "power",
+            "columnName": "power",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "move_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_move_type_id",
+            "unique": false,
+            "columnNames": [
+              "type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_move_type_id` ON `${TABLE_NAME}` (`type_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "type",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "type_id"
+            ],
+            "referencedColumns": [
+              "type_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pokemon_type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pokemon_id` INTEGER NOT NULL, `type_id` INTEGER NOT NULL, PRIMARY KEY(`pokemon_id`, `type_id`), FOREIGN KEY(`pokemon_id`) REFERENCES `pokemon`(`pokemon_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`type_id`) REFERENCES `type`(`type_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pokemonId",
+            "columnName": "pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pokemon_id",
+            "type_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pokemon_type_type_id",
+            "unique": false,
+            "columnNames": [
+              "type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pokemon_type_type_id` ON `${TABLE_NAME}` (`type_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "pokemon",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pokemon_id"
+            ],
+            "referencedColumns": [
+              "pokemon_id"
+            ]
+          },
+          {
+            "table": "type",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "type_id"
+            ],
+            "referencedColumns": [
+              "type_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "pokemon_move",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pokemon_id` INTEGER NOT NULL, `move_id` INTEGER NOT NULL, PRIMARY KEY(`pokemon_id`, `move_id`), FOREIGN KEY(`pokemon_id`) REFERENCES `pokemon`(`pokemon_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`move_id`) REFERENCES `move`(`move_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "pokemonId",
+            "columnName": "pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "moveId",
+            "columnName": "move_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "pokemon_id",
+            "move_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_pokemon_move_move_id",
+            "unique": false,
+            "columnNames": [
+              "move_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pokemon_move_move_id` ON `${TABLE_NAME}` (`move_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "pokemon",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pokemon_id"
+            ],
+            "referencedColumns": [
+              "pokemon_id"
+            ]
+          },
+          {
+            "table": "move",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "move_id"
+            ],
+            "referencedColumns": [
+              "move_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "evolution",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`from_pokemon_id` INTEGER NOT NULL, `to_pokemon_id` INTEGER NOT NULL, `method` TEXT, `level_required` INTEGER NOT NULL, PRIMARY KEY(`from_pokemon_id`, `to_pokemon_id`), FOREIGN KEY(`from_pokemon_id`) REFERENCES `pokemon`(`pokemon_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`to_pokemon_id`) REFERENCES `pokemon`(`pokemon_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "fromPokemonId",
+            "columnName": "from_pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toPokemonId",
+            "columnName": "to_pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "method",
+            "columnName": "method",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "levelRequired",
+            "columnName": "level_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "from_pokemon_id",
+            "to_pokemon_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_evolution_to_pokemon_id",
+            "unique": false,
+            "columnNames": [
+              "to_pokemon_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_evolution_to_pokemon_id` ON `${TABLE_NAME}` (`to_pokemon_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "pokemon",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "from_pokemon_id"
+            ],
+            "referencedColumns": [
+              "pokemon_id"
+            ]
+          },
+          {
+            "table": "pokemon",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "to_pokemon_id"
+            ],
+            "referencedColumns": [
+              "pokemon_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "user_pokemon_list",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `pokemon_id` INTEGER NOT NULL, PRIMARY KEY(`user_id`, `pokemon_id`), FOREIGN KEY(`user_id`) REFERENCES `users`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`pokemon_id`) REFERENCES `pokemon`(`pokemon_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pokemonId",
+            "columnName": "pokemon_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "user_id",
+            "pokemon_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_user_pokemon_list_user_id",
+            "unique": false,
+            "columnNames": [
+              "user_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_pokemon_list_user_id` ON `${TABLE_NAME}` (`user_id`)"
+          },
+          {
+            "name": "index_user_pokemon_list_pokemon_id",
+            "unique": false,
+            "columnNames": [
+              "pokemon_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_user_pokemon_list_pokemon_id` ON `${TABLE_NAME}` (`pokemon_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "users",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "user_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "pokemon",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "pokemon_id"
+            ],
+            "referencedColumns": [
+              "pokemon_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5cc2f774c34299146d13538a6fb55134')"
+    ]
+  }
+}
