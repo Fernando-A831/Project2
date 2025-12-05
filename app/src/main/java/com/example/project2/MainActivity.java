@@ -121,8 +121,6 @@ public class MainActivity extends AppCompatActivity {
                                                 db.pokemonDao().insert(pokemonType);
                                             }
                                         });
-
-                                        Toast.makeText(MainActivity.this, "Fetched and saved: " + pokemon.getName(), Toast.LENGTH_LONG).show();
                                     } else {
                                         Log.e(TAG, "onResponse: PokemonResponse is null");
                                     }
