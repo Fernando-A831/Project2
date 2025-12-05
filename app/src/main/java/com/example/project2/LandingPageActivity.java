@@ -10,33 +10,34 @@ import android.widget.TextView;
 
 public class LandingPageActivity extends AppCompatActivity {
 
-    TextView tvWelcome;
-    Button btnAdminArea, btnLogout;
+    private TextView welcomeTextView;
+    private Button adminButton, logoutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
 
-        tvWelcome = findViewById(R.id.tvWelcome);
-        btnAdminArea = findViewById(R.id.btnAdminArea);
-        btnLogout = findViewById(R.id.btnLogout);
+        welcomeTextView = findViewById(R.id.welcomeTextView);
+        adminButton = findViewById(R.id.adminButton);
+        logoutButton = findViewById(R.id.logoutButton);
 
-        // TODO Fernando: load extra user info from DB later if needed
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 
         String username = prefs.getString("username", "User");
         boolean isAdmin = prefs.getBoolean("isAdmin", false);
 
-        tvWelcome.setText("Welcome, " + username);
+        welcomeTextView.setText("Welcome, " + username);
 
         if(isAdmin) {
-            btnAdminArea.setVisibility(View.VISIBLE);
+            adminButton.setVisibility(View.VISIBLE);
         }
 
-        btnLogout.setOnClickListener(v -> {
-            prefs.edit().clear().apply();
-            startActivity(new Intent(LandingPageActivity.this, LoginActivity.class));
+        logoutButton.setOnClickListener(v -> {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear();
+            editor.apply();
+            startActivity(new Intent(LandingPageActivity.this, MainActivity.class));
             finish();
         });
     }

@@ -1,18 +1,27 @@
 package com.example.project2;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.project2.db.AppDatabase;
+import com.example.project2.db.User;
+import com.example.project2.db.UserDao;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class LoginActivity extends AppCompatActivity {
 
-    EditText etUsername, etPassword;
-    Button btnLogin;
+    private EditText etUsername;
+    private EditText etPassword;
+    private Button btnLogin;
+    private UserDao userDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,39 +32,31 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        userDao = AppDatabase.getInstance(this).userDao();
 
-                String user = etUsername.getText().toString().trim();
-                String pass = etPassword.getText().toString().trim();
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString();
+            String password = etPassword.getText().toString();
 
-                // TODO Fernando: later check from DB
-                // TODO Fernando: use userDao here
-                // TODO Fernando: remove hardcoded users
-                if(user.equals("testuser1") && pass.equals("testuser1")) {
-                    loginSuccess(user, false);
-                }
-                else if(user.equals("admin2") && pass.equals("admin2")) {
-                    loginSuccess(user, true);
-                }
-                else {
-                    Toast.makeText(LoginActivity.this, "Incorrect username or password", Toast.LENGTH_SHORT).show();
-                }
-            }
+            Executor executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                User user = userDao.getUserByUsername(username);
+                runOnUiThread(() -> {
+                    if (user != null && user.getPassword().equals(password)) {
+                        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putBoolean("loggedIn", true);
+                        editor.putString("username", user.getUsername());
+                        editor.putBoolean("isAdmin", user.isAdmin());
+                        editor.apply();
+
+                        startActivity(new Intent(LoginActivity.this, LandingPageActivity.class));
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
         });
-    }
-
-    private void loginSuccess(String username, boolean isAdmin) {
-
-        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
-        prefs.edit()
-                .putBoolean("loggedIn", true)
-                .putString("username", username)
-                .putBoolean("isAdmin", isAdmin)
-                .apply();
-
-        startActivity(new Intent(LoginActivity.this, LandingPageActivity.class));
-        finish();
     }
 }

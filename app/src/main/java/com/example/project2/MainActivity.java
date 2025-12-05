@@ -4,6 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.example.project2.db.AppDatabase;
+import com.example.project2.db.User;
+import com.example.project2.db.UserDao;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,17 +20,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            UserDao userDao = AppDatabase.getInstance(getApplicationContext()).userDao();
+            if (userDao.getUserByUsername("testuser1") == null) {
+                userDao.insert(new User("testuser1", "testuser1", false));
+            }
+            if (userDao.getUserByUsername("admin2") == null) {
+                userDao.insert(new User("admin2", "admin2", true));
+            }
+        });
+
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         boolean loggedIn = prefs.getBoolean("loggedIn", false);
 
         if(loggedIn) {
-            // user already logged in → skip login
             startActivity(new Intent(MainActivity.this, LandingPageActivity.class));
+            finish();
         } else {
-            // user not logged in → go to login screen
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }
+            setContentView(R.layout.activity_main);
 
-        finish();
+            Button loginButton = findViewById(R.id.loginButton);
+            loginButton.setOnClickListener(v -> {
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            });
+
+            Button createAccountButton = findViewById(R.id.createAccountButton);
+            createAccountButton.setOnClickListener(v -> {
+                Toast.makeText(MainActivity.this, "Create account not implemented yet", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 }
