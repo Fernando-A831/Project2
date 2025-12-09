@@ -8,20 +8,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project2.data.User;
+import com.example.project2.db.User;
 
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-    public interface OnUserClick {
-        void onClick(User user);
+    public interface OnUserClickListener {
+        void onUserClick(User user);
     }
 
-    private List<User> users;
-    private OnUserClick listener;
+    private final List<User> users;
+    private final OnUserClickListener listener;
 
-    public UserAdapter(List<User> users, OnUserClick listener) {
+    public UserAdapter(List<User> users, OnUserClickListener listener) {
         this.users = users;
         this.listener = listener;
     }
@@ -29,16 +29,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_user, parent, false);
-        return new UserViewHolder(v);
+        return new UserViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
         User user = users.get(position);
-        holder.txtName.setText(user.username);
-        holder.itemView.setOnClickListener(v -> listener.onClick(user));
+        holder.txtName.setText(user.getUsername());
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onUserClick(user);
+            }
+        });
     }
 
     @Override
@@ -55,3 +59,4 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         }
     }
 }
+

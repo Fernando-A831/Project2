@@ -44,4 +44,8 @@ public interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(UserPokemonList... userPokemonLists);
+
+    @Query("SELECT * FROM pokemon ORDER BY name ASC")
+    List<Pokemon> getAllPokemon();
+
 }

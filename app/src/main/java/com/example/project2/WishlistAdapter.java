@@ -8,13 +8,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project2.data.Pokemon;
+import com.example.project2.db.pokemon.Pokemon;
 
 import java.util.List;
 
 public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.WishViewHolder> {
 
-    private List<Pokemon> wishlist;
+    private final List<Pokemon> wishlist;
 
     public WishlistAdapter(List<Pokemon> wishlist) {
         this.wishlist = wishlist;
@@ -23,17 +23,15 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.WishVi
     @NonNull
     @Override
     public WishViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_wishlist, parent, false);
-        return new WishViewHolder(v);
+        return new WishViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull WishViewHolder holder, int position) {
-        Pokemon p = wishlist.get(position);
-
-        // Kotlin data class → must use getter
-        holder.txtName.setText(p.getName());
+        Pokemon pokemon = wishlist.get(position);
+        holder.txtName.setText(pokemon.getName());
     }
 
     @Override

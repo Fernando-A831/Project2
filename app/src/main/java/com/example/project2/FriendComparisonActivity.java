@@ -2,11 +2,13 @@ package com.example.project2;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project2.data.User;
+import com.example.project2.db.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class FriendComparisonActivity extends AppCompatActivity {
 
         userAdapter = new UserAdapter(users, user -> {
             Intent intent = new Intent(FriendComparisonActivity.this, CompareDetailActivity.class);
-            intent.putExtra("username", user.username);
+            intent.putExtra("username", user.getUsername());
             startActivity(intent);
         });
 

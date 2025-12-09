@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class LandingPageActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
-    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton;
+    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton, wishlistButton;
     private EditText searchPokemonEditText;
 
     @Override
@@ -28,6 +28,8 @@ public class LandingPageActivity extends AppCompatActivity {
         randomPokemonButton = findViewById(R.id.randomPokemonButton);
         searchPokemonEditText = findViewById(R.id.searchPokemonEditText);
         searchPokemonButton = findViewById(R.id.searchPokemonButton);
+        wishlistButton = findViewById(R.id.wishlistButton);
+
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         String username = prefs.getString("username", "User");
@@ -65,6 +67,14 @@ public class LandingPageActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        wishlistButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LandingPageActivity.this, WishlistActivity.class);
+            startActivity(intent);
+        });
+
+
+
 
         logoutButton.setOnClickListener(v -> {
             SharedPreferences.Editor editor = prefs.edit();
