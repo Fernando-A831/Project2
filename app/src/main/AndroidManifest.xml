@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Project2"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".RandomPokemonActivity"
+            android:exported="false" />
+        <activity
             android:name=".LandingPageActivity"
             android:exported="false" />
         <activity
