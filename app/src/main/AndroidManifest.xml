@@ -14,27 +14,51 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Project2"
         android:usesCleartextTraffic="true">
+
+        <!-- Random Pokémon screen -->
         <activity
             android:name=".RandomPokemonActivity"
             android:exported="false" />
+
+        <!-- Landing page after login -->
         <activity
             android:name=".LandingPageActivity"
             android:exported="false" />
-        <activity android:name=".SearchPokemonActivity" />
 
+        <!-- Search Pokémon by name screen -->
+        <activity
+            android:name=".SearchPokemonActivity"
+            android:exported="false" />
+
+        <!-- Wishlist feature screens -->
+        <activity
+            android:name=".WishlistActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CompareDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".FriendComparisonActivity"
+            android:exported="false" />
+
+        <!-- Login screen -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.Project2" />
+
+        <!-- Entry point / launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
