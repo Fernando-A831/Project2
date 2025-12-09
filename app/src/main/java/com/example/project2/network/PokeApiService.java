@@ -18,4 +18,11 @@ public interface PokeApiService {
 
     @GET("pokemon-species/{id}")
     Call<PokemonSpeciesResponse> getPokemonSpeciesById(@Path("id") int id);
+
+    @GET("pokemon/{name}")
+    Call<PokemonResponse> getPokemonByName(@Path("name") String name);
+
+    @GET("pokemon-species/{name}")
+    Call<PokemonSpeciesResponse> getPokemonSpeciesByName(@Path("name") String name);
+
 }

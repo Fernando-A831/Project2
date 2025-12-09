@@ -1,13 +1,12 @@
 package com.example.project2;
 
-import androidx.appcompat.app.AppCompatActivity;
-import com.example.project2.db.pokemon.Region;
-
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.project2.db.AppDatabase;
@@ -31,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RandomPokemonActivity extends AppCompatActivity {
+public class SearchPokemonActivity extends AppCompatActivity {
 
     private static final String TAG = "RandomPokemonActivity";
     private static final int MAX_POKEMON_ID = 1010;
@@ -56,8 +55,66 @@ public class RandomPokemonActivity extends AppCompatActivity {
         pokedexEntryTextView.setMovementMethod(new ScrollingMovementMethod());
 
         pokemonNameTextView.setText("Loading...");
-        fetchAndSaveRandomPokemon();
+
+        String pokemonName = getIntent().getStringExtra("pokemon_name");
+
+        if (pokemonName != null && !pokemonName.trim().isEmpty()) {
+            fetchAndSavePokemonByName(pokemonName.trim().toLowerCase());
+        } else {
+            handleFailure("No Pokémon name provided");
+        }
+
+
     }
+
+    private void fetchAndSavePokemonByName(String name) {
+        PokeApiService service = RetrofitClient.getClient().create(PokeApiService.class);
+
+        Log.d(TAG, "Searching Pokémon: " + name);
+
+        Call<PokemonResponse> pokemonCall = service.getPokemonByName(name);
+        Call<PokemonSpeciesResponse> speciesCall = service.getPokemonSpeciesByName(name);
+
+        pokemonCall.enqueue(new Callback<PokemonResponse>() {
+            @Override
+            public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> pokemonDetailsResponse) {
+                if (!pokemonDetailsResponse.isSuccessful() || pokemonDetailsResponse.body() == null) {
+                    Log.e(TAG, "Details error (search): code=" + pokemonDetailsResponse.code()
+                            + " message=" + pokemonDetailsResponse.message());
+                    handleFailure("Pokémon not found");
+                    return;
+                }
+
+                speciesCall.enqueue(new Callback<PokemonSpeciesResponse>() {
+                    @Override
+                    public void onResponse(Call<PokemonSpeciesResponse> call, Response<PokemonSpeciesResponse> speciesDetailsResponse) {
+                        if (!speciesDetailsResponse.isSuccessful() || speciesDetailsResponse.body() == null) {
+                            Log.e(TAG, "Species error (search): code=" + speciesDetailsResponse.code()
+                                    + " message=" + speciesDetailsResponse.message());
+                            handleFailure("Failed to load Pokémon species");
+                            return;
+                        }
+
+                        // Reuse existing DB + UI logic
+                        saveDataAndDisplay(pokemonDetailsResponse.body(), speciesDetailsResponse.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<PokemonSpeciesResponse> call, Throwable t) {
+                        Log.e(TAG, "Species failure (search)", t);
+                        handleFailure("Network error");
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<PokemonResponse> call, Throwable t) {
+                Log.e(TAG, "Details failure (search)", t);
+                handleFailure("Network error");
+            }
+        });
+    }
+
 
     private void fetchAndSaveRandomPokemon() {
         PokeApiService service = RetrofitClient.getClient().create(PokeApiService.class);
