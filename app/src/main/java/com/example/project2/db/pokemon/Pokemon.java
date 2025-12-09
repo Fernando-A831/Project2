@@ -2,14 +2,9 @@ package com.example.project2.db.pokemon;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "pokemon",
-        foreignKeys = @ForeignKey(entity = Region.class,
-                                  parentColumns = "region_id",
-                                  childColumns = "region_id",
-                                  onDelete = ForeignKey.CASCADE))
+@Entity(tableName = "pokemon")
 public class Pokemon {
     @PrimaryKey
     @ColumnInfo(name = "pokemon_id")
@@ -18,6 +13,8 @@ public class Pokemon {
     private String name;
     private int height;
     private int weight;
+    private String spriteUrl;
+    private String pokedexEntry;
 
     @ColumnInfo(name = "region_id", index = true)
     private int regionId;
@@ -53,6 +50,22 @@ public class Pokemon {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public String getSpriteUrl() {
+        return spriteUrl;
+    }
+
+    public void setSpriteUrl(String spriteUrl) {
+        this.spriteUrl = spriteUrl;
+    }
+
+    public String getPokedexEntry() {
+        return pokedexEntry;
+    }
+
+    public void setPokedexEntry(String pokedexEntry) {
+        this.pokedexEntry = pokedexEntry;
     }
 
     public int getRegionId() {

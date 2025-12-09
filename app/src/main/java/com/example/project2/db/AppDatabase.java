@@ -16,7 +16,7 @@ import com.example.project2.db.pokemon.Region;
 import com.example.project2.db.pokemon.Type;
 import com.example.project2.db.pokemon.UserPokemonList;
 
-@Database(entities = {User.class, Pokemon.class, Region.class, Type.class, Move.class, PokemonType.class, PokemonMove.class, Evolution.class, UserPokemonList.class}, version = 2)
+@Database(entities = {User.class, Pokemon.class, Region.class, Type.class, Move.class, PokemonType.class, PokemonMove.class, Evolution.class, UserPokemonList.class}, version = 5)
 public abstract class AppDatabase extends RoomDatabase {
     public static final String DB_NAME = "PROJECT2_DB";
     private static volatile AppDatabase instance;

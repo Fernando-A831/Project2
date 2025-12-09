@@ -21,6 +21,9 @@ public class PokemonResponse {
     @SerializedName("types")
     private List<PokemonTypeResponse> types;
 
+    @SerializedName("sprites")
+    private Sprites sprites;
+
     public int getId() {
         return id;
     }
@@ -39,5 +42,9 @@ public class PokemonResponse {
 
     public List<PokemonTypeResponse> getTypes() {
         return types;
+    }
+
+    public Sprites getSprites() {
+        return sprites;
     }
 }

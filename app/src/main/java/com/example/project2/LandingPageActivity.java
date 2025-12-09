@@ -11,7 +11,7 @@ import android.widget.TextView;
 public class LandingPageActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
-    private Button adminButton, logoutButton;
+    private Button adminButton, logoutButton, randomPokemonButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,7 @@ public class LandingPageActivity extends AppCompatActivity {
         welcomeTextView = findViewById(R.id.welcomeTextView);
         adminButton = findViewById(R.id.adminButton);
         logoutButton = findViewById(R.id.logoutButton);
+        randomPokemonButton = findViewById(R.id.randomPokemonButton);
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
 
@@ -32,6 +33,10 @@ public class LandingPageActivity extends AppCompatActivity {
         if(isAdmin) {
             adminButton.setVisibility(View.VISIBLE);
         }
+
+        randomPokemonButton.setOnClickListener(v -> {
+            startActivity(new Intent(LandingPageActivity.this, RandomPokemonActivity.class));
+        });
 
         logoutButton.setOnClickListener(v -> {
             SharedPreferences.Editor editor = prefs.edit();
