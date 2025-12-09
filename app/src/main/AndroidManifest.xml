@@ -27,6 +27,9 @@
             android:exported="false"
             android:theme="@style/Theme.Project2" />
         <activity
+            android:name=".PokemonByTypeActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

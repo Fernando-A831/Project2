@@ -44,4 +44,16 @@ public interface PokemonDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(UserPokemonList... userPokemonLists);
+
+    @Query("SELECT DISTINCT T.type_id, T.name FROM `type` T JOIN pokemon_type PT ON T.type_id = PT.type_id ORDER BY T.name")
+    List<Type> getAllTypes();
+
+    @Query("SELECT P.* FROM pokemon P JOIN pokemon_type PT ON P.pokemon_id = PT.pokemon_id JOIN `type` T ON PT.type_id = T.type_id WHERE T.name = :typeName ORDER BY P.name")
+    List<Pokemon> getPokemonsByType(String typeName);
+
+    @Query("SELECT P.* FROM pokemon P WHERE P.region_id = :regionId ORDER BY P.name")
+    List<Pokemon> getPokemonsByRegion(int regionId);
+
+    @Query("SELECT * FROM region ORDER BY name")
+    List<Region> getAllRegions();
 }
