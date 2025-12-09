@@ -15,6 +15,7 @@ public class LandingPageActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
     private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton;
+    private Button pokemonByTypeButton, pokemonByRegionButton, generationSearchButton;
     private EditText searchPokemonEditText;
 
     @Override
@@ -28,6 +29,9 @@ public class LandingPageActivity extends AppCompatActivity {
         randomPokemonButton = findViewById(R.id.randomPokemonButton);
         searchPokemonEditText = findViewById(R.id.searchPokemonEditText);
         searchPokemonButton = findViewById(R.id.searchPokemonButton);
+        pokemonByTypeButton = findViewById(R.id.pokemonByTypeButton);
+        pokemonByRegionButton = findViewById(R.id.pokemonByRegionButton);
+        generationSearchButton = findViewById(R.id.generationSearchButton);
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         String username = prefs.getString("username", "User");
@@ -64,6 +68,18 @@ public class LandingPageActivity extends AppCompatActivity {
                 return true;
             }
             return false;
+        });
+
+        pokemonByTypeButton.setOnClickListener(v -> {
+            startActivity(new Intent(LandingPageActivity.this, PokemonByTypeActivity.class));
+        });
+
+        pokemonByRegionButton.setOnClickListener(v -> {
+            startActivity(new Intent(LandingPageActivity.this, PokemonByRegionActivity.class));
+        });
+
+        generationSearchButton.setOnClickListener(v -> {
+            startActivity(new Intent(LandingPageActivity.this, GenerationSearchActivity.class));
         });
 
         logoutButton.setOnClickListener(v -> {
