@@ -46,10 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             });
 
-            Button createAccountButton = findViewById(R.id.createAccountButton);
-            createAccountButton.setOnClickListener(v -> {
-                Toast.makeText(MainActivity.this, "Create account not implemented yet", Toast.LENGTH_SHORT).show();
-            });
+
         }
     }
 }

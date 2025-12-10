@@ -45,6 +45,12 @@ public class LandingPageActivity extends AppCompatActivity {
 
         if (isAdmin) {
             adminButton.setVisibility(View.VISIBLE);
+            adminButton.setOnClickListener(v -> {
+                startActivity(new Intent(LandingPageActivity.this, com.example.project2.AdminActivity.class));
+            });
+        } else {
+            // Just in case, make sure it's hidden for non-admins
+            adminButton.setVisibility(View.INVISIBLE);
         }
 
         // Random Pokémon
