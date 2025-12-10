@@ -1,77 +1,84 @@
 package com.example.project2;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class LandingPageActivity extends AppCompatActivity {
-
-    private TextView welcomeTextView;
-    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton;
-    private EditText searchPokemonEditText;
+    private Button randomPokemonButton;
+    private Button searchPokemonButton;
+    private Button wishlistButton;
+    private Button teamBuilderButton;
+    private Button logoutButton;
+    private TextView welcomeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
 
-        welcomeTextView = findViewById(R.id.welcomeTextView);
-        adminButton = findViewById(R.id.adminButton);
-        logoutButton = findViewById(R.id.logoutButton);
+        // Initialize views
+        welcomeText = findViewById(R.id.welcomeText);
         randomPokemonButton = findViewById(R.id.randomPokemonButton);
-        searchPokemonEditText = findViewById(R.id.searchPokemonEditText);
         searchPokemonButton = findViewById(R.id.searchPokemonButton);
+        wishlistButton = findViewById(R.id.wishlistButton);
+        teamBuilderButton = findViewById(R.id.teamBuilderButton);
+        logoutButton = findViewById(R.id.logoutButton);
 
-        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
-        String username = prefs.getString("username", "User");
-        boolean isAdmin = prefs.getBoolean("isAdmin", false);
+        // Get username from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("PokedexPrefs", MODE_PRIVATE);
+        String username = prefs.getString("username", "Trainer");
+        welcomeText.setText("Welcome, " + username + "!");
 
-        welcomeTextView.setText("Welcome, " + username);
-
-        if (isAdmin) {
-            adminButton.setVisibility(View.VISIBLE);
-        }
-
-        // Random Pokémon
+        // Set button click listeners
         randomPokemonButton.setOnClickListener(v -> {
-            startActivity(new Intent(LandingPageActivity.this, RandomPokemonActivity.class));
-        });
-
-        searchPokemonButton.setOnClickListener(v -> {
-            String name = searchPokemonEditText.getText().toString().trim().toLowerCase();
-
-            if (name.isEmpty()) {
-                searchPokemonEditText.setError("Please enter a Pokémon name");
-                return;
-            }
-
-            Intent intent = new Intent(LandingPageActivity.this, SearchPokemonActivity.class);
-            intent.putExtra("pokemon_name", name);
+            Intent intent = new Intent(LandingPageActivity.this, RandomPokemonActivity.class);
             startActivity(intent);
         });
 
-        searchPokemonEditText.setOnEditorActionListener((textView, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH
-                    || actionId == EditorInfo.IME_ACTION_DONE) {
-                searchPokemonButton.performClick();
-                return true;
-            }
-            return false;
+        searchPokemonButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LandingPageActivity.this, SearchPokemonActivity.class);
+            startActivity(intent);
         });
 
-        logoutButton.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.clear();
-            editor.apply();
-            startActivity(new Intent(LandingPageActivity.this, MainActivity.class));
-            finish();
+        wishlistButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LandingPageActivity.this, WishlistActivity.class);
+            startActivity(intent);
         });
+
+        teamBuilderButton.setOnClickListener(v -> {
+            Intent intent = new Intent(LandingPageActivity.this, TeamBuilderActivity.class);
+            startActivity(intent);
+        });
+
+        logoutButton.setOnClickListener(v -> logout());
+    }
+
+    private void logout() {
+        // Clear SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("PokedexPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+
+        // Show toast
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+        // Go back to MainActivity
+        Intent intent = new Intent(LandingPageActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Disable back button on landing page
+        // User must use logout to exit
     }
 }
