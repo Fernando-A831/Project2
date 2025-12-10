@@ -1,5 +1,6 @@
 package com.example.project2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,6 +23,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etPassword;
     private Button btnLogin;
     private UserDao userDao;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, LoginActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("userId", user.getId());
                         editor.apply();
 
-                        startActivity(new Intent(LoginActivity.this, LandingPageActivity.class));
+                        startActivity(LandingPageActivity.newIntent(LoginActivity.this));
                         finish();
                     } else {
                         Toast.makeText(LoginActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();

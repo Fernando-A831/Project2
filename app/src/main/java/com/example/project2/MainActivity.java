@@ -1,6 +1,8 @@
 package com.example.project2;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +17,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +42,14 @@ public class MainActivity extends AppCompatActivity {
         int userId = prefs.getInt("userId", -1);
 
         if(loggedIn && userId != -1) {
-            startActivity(new Intent(MainActivity.this, LandingPageActivity.class));
+            startActivity(LandingPageActivity.newIntent(MainActivity.this));
             finish();
         } else {
             setContentView(R.layout.activity_main);
 
             Button loginButton = findViewById(R.id.loginButton);
             loginButton.setOnClickListener(v -> {
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(LoginActivity.newIntent(MainActivity.this));
             });
 
 

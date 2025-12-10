@@ -1,5 +1,7 @@
 package com.example.project2;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -33,6 +35,7 @@ import retrofit2.Response;
 public class SearchPokemonActivity extends AppCompatActivity {
 
     private static final String TAG = "RandomPokemonActivity";
+    private static final String EXTRA_POKEMON_NAME = "pokemon_name";
     private static final int MAX_POKEMON_ID = 1010;
     private ImageView pokemonSpriteImageView;
     private TextView pokemonNameTextView;
@@ -40,6 +43,12 @@ public class SearchPokemonActivity extends AppCompatActivity {
     private TextView pokemonWeightTextView;
     private TextView pokemonTypesTextView;
     private TextView pokedexEntryTextView;
+
+    public static Intent newIntent(Context context, String pokemonName) {
+        Intent intent = new Intent(context, SearchPokemonActivity.class);
+        intent.putExtra(EXTRA_POKEMON_NAME, pokemonName);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +65,7 @@ public class SearchPokemonActivity extends AppCompatActivity {
 
         pokemonNameTextView.setText("Loading...");
 
-        String pokemonName = getIntent().getStringExtra("pokemon_name");
+        String pokemonName = getIntent().getStringExtra(EXTRA_POKEMON_NAME);
 
         if (pokemonName != null && !pokemonName.trim().isEmpty()) {
             fetchAndSavePokemonByName(pokemonName.trim().toLowerCase());

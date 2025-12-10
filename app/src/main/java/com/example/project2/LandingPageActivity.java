@@ -2,6 +2,7 @@ package com.example.project2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,10 @@ public class LandingPageActivity extends AppCompatActivity {
     private TextView welcomeTextView;
     private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton, wishlistButton, friendComparisonButton;
     private EditText searchPokemonEditText;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, LandingPageActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,7 @@ public class LandingPageActivity extends AppCompatActivity {
         if (isAdmin) {
             adminButton.setVisibility(View.VISIBLE);
             adminButton.setOnClickListener(v -> {
-                startActivity(new Intent(LandingPageActivity.this, com.example.project2.AdminActivity.class));
+                startActivity(AdminActivity.newIntent(LandingPageActivity.this));
             });
         } else {
             // Just in case, make sure it's hidden for non-admins
@@ -55,7 +60,7 @@ public class LandingPageActivity extends AppCompatActivity {
 
         // Random Pokémon
         randomPokemonButton.setOnClickListener(v -> {
-            startActivity(new Intent(LandingPageActivity.this, RandomPokemonActivity.class));
+            startActivity(RandomPokemonActivity.newIntent(LandingPageActivity.this));
         });
 
         searchPokemonButton.setOnClickListener(v -> {
@@ -66,9 +71,7 @@ public class LandingPageActivity extends AppCompatActivity {
                 return;
             }
 
-            Intent intent = new Intent(LandingPageActivity.this, SearchPokemonActivity.class);
-            intent.putExtra("pokemon_name", name);
-            startActivity(intent);
+            startActivity(SearchPokemonActivity.newIntent(LandingPageActivity.this, name));
         });
 
         searchPokemonEditText.setOnEditorActionListener((textView, actionId, event) -> {
@@ -81,8 +84,7 @@ public class LandingPageActivity extends AppCompatActivity {
         });
 
         wishlistButton.setOnClickListener(v -> {
-            Intent intent = new Intent(LandingPageActivity.this, WishlistActivity.class);
-            startActivity(intent);
+            startActivity(WishlistActivity.newIntent(LandingPageActivity.this));
         });
 
 
@@ -92,7 +94,7 @@ public class LandingPageActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = prefs.edit();
             editor.clear();
             editor.apply();
-            startActivity(new Intent(LandingPageActivity.this, MainActivity.class));
+            startActivity(MainActivity.newIntent(LandingPageActivity.this));
             finish();
         });
     }

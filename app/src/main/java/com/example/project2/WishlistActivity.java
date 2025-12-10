@@ -1,5 +1,7 @@
 package com.example.project2;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -21,6 +23,10 @@ public class WishlistActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private WishlistAdapter wishlistAdapter;
     private final List<Pokemon> wishlist = new ArrayList<>();
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, WishlistActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

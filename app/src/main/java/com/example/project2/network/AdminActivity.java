@@ -2,6 +2,8 @@ package com.example.project2;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,6 +26,10 @@ public class AdminActivity extends AppCompatActivity {
 
     private UserDao userDao;
     private final Executor executor = Executors.newSingleThreadExecutor();
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, AdminActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

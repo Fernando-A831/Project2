@@ -3,6 +3,8 @@ package com.example.project2;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.project2.db.pokemon.Region;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -49,6 +51,10 @@ public class RandomPokemonActivity extends AppCompatActivity {
 
     private int currentPokemonId = -1;
     private Button btnAddToWishlist;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, RandomPokemonActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
