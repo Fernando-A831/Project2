@@ -59,7 +59,7 @@ public class CompareDetailActivity extends AppCompatActivity {
             friendName = "Friend";
         }
 
-        txtInfo.setText(friendName + "'s wishlist");
+        txtInfo.setText(friendName + "\'s wishlist");
 
         loadFriendWishlist(friendUserId);
     }
@@ -73,7 +73,7 @@ public class CompareDetailActivity extends AppCompatActivity {
             List<Pokemon> wishlist = dao.getWishlistForUser(friendUserId);
 
             runOnUiThread(() -> {
-               // friendWishlist.clear();
+                friendWishlist.clear();
                 friendWishlist.addAll(wishlist);
                 wishlistAdapter.notifyDataSetChanged();
             });
