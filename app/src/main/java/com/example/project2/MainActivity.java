@@ -33,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         boolean loggedIn = prefs.getBoolean("loggedIn", false);
+        int userId = prefs.getInt("userId", -1);
 
-        if(loggedIn) {
+        if(loggedIn && userId != -1) {
             startActivity(new Intent(MainActivity.this, LandingPageActivity.class));
             finish();
         } else {

@@ -1,5 +1,6 @@
 package com.example.project2;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,27 +30,33 @@ public class WishlistActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerWishlist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Start with an empty list; fill it after DB query
         wishlistAdapter = new WishlistAdapter(wishlist);
         recyclerView.setAdapter(wishlistAdapter);
 
-        loadWishlistFromDatabase();
+        loadWishlistForCurrentUser();
     }
 
-    private void loadWishlistFromDatabase() {
+    private void loadWishlistForCurrentUser() {
+        SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+        if (userId == -1) {
+            return;
+        }
+
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             PokemonDao dao = db.pokemonDao();
 
-            // Get all Pokémon saved in the DB
-            List<Pokemon> pokemons = dao.getAllPokemon();
+            List<Pokemon> favorites = dao.getWishlistForUser(userId);
 
             runOnUiThread(() -> {
                 wishlist.clear();
-                wishlist.addAll(pokemons);
+                wishlist.addAll(favorites);
                 wishlistAdapter.notifyDataSetChanged();
             });
         });
     }
 }
+

@@ -48,4 +48,20 @@ public interface PokemonDao {
     @Query("SELECT * FROM pokemon ORDER BY name ASC")
     List<Pokemon> getAllPokemon();
 
+
+    @Query("SELECT p.* FROM pokemon p " +
+            "INNER JOIN user_pokemon_list upl " +
+            "ON p.pokemon_id = upl.pokemon_id " +
+            "WHERE upl.user_id = :userId " +
+            "ORDER BY p.name ASC")
+    List<Pokemon> getWishlistForUser(int userId);
+
+
+    @Query("DELETE FROM user_pokemon_list " +
+            "WHERE user_id = :userId AND pokemon_id = :pokemonId")
+    void removeFromWishlist(int userId, int pokemonId);
+
+
+
+
 }

@@ -30,6 +30,11 @@ import java.util.concurrent.Executors;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.content.SharedPreferences;
+import android.widget.Button;
+
+import com.example.project2.db.pokemon.UserPokemonList;
+
 
 public class RandomPokemonActivity extends AppCompatActivity {
 
@@ -41,6 +46,9 @@ public class RandomPokemonActivity extends AppCompatActivity {
     private TextView pokemonWeightTextView;
     private TextView pokemonTypesTextView;
     private TextView pokedexEntryTextView;
+
+    private int currentPokemonId = -1;
+    private Button btnAddToWishlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +63,34 @@ public class RandomPokemonActivity extends AppCompatActivity {
         pokedexEntryTextView = findViewById(R.id.pokedexEntryTextView);
         pokedexEntryTextView.setMovementMethod(new ScrollingMovementMethod());
 
+        btnAddToWishlist = findViewById(R.id.btnAddToWishlist);
+        btnAddToWishlist.setOnClickListener(v -> {
+            if (currentPokemonId == -1) {
+                return;
+            }
+
+            SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
+            int userId = prefs.getInt("userId", -1);
+            if (userId == -1) {
+                return;
+            }
+
+            Executor executor = Executors.newSingleThreadExecutor();
+            executor.execute(() -> {
+                AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+                PokemonDao dao = db.pokemonDao();
+
+                UserPokemonList link = new UserPokemonList();
+                link.setUserId(userId);
+                link.setPokemonId(currentPokemonId);
+
+                dao.insert(link);
+            });
+        });
+
         pokemonNameTextView.setText("Loading...");
         fetchAndSaveRandomPokemon();
+
     }
 
     private void fetchAndSaveRandomPokemon() {
@@ -132,6 +166,7 @@ public class RandomPokemonActivity extends AppCompatActivity {
             pokemon.setSpriteUrl(pokemonResponse.getSprites().getFrontDefault());
             pokemon.setPokedexEntry(entry);
             dao.insert(pokemon);
+            currentPokemonId = pokemon.getPokemonId();
 
             for (PokemonTypeResponse typeResponse : pokemonResponse.getTypes()) {
                 Type existingType = dao.getTypeByName(typeResponse.getType().getName());

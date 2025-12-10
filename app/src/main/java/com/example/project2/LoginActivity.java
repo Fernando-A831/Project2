@@ -48,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putBoolean("loggedIn", true);
                         editor.putString("username", user.getUsername());
                         editor.putBoolean("isAdmin", user.isAdmin());
+                        editor.putInt("userId", user.getId());
                         editor.apply();
 
                         startActivity(new Intent(LoginActivity.this, LandingPageActivity.class));

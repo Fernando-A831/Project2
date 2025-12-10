@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class LandingPageActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
-    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton, wishlistButton;
+    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton, wishlistButton, friendComparisonButton;
     private EditText searchPokemonEditText;
 
     @Override
@@ -29,6 +29,12 @@ public class LandingPageActivity extends AppCompatActivity {
         searchPokemonEditText = findViewById(R.id.searchPokemonEditText);
         searchPokemonButton = findViewById(R.id.searchPokemonButton);
         wishlistButton = findViewById(R.id.wishlistButton);
+        friendComparisonButton = findViewById(R.id.friendComparisonButton);
+
+        friendComparisonButton.setOnClickListener(v -> {
+            startActivity(FriendComparisonActivity.newIntent(LandingPageActivity.this));
+        });
+
 
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
