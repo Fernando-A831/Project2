@@ -73,7 +73,7 @@ public class CompareDetailActivity extends AppCompatActivity {
             List<Pokemon> wishlist = dao.getWishlistForUser(friendUserId);
 
             runOnUiThread(() -> {
-                friendWishlist.clear();
+               // friendWishlist.clear();
                 friendWishlist.addAll(wishlist);
                 wishlistAdapter.notifyDataSetChanged();
             });
