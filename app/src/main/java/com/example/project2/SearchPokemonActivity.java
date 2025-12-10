@@ -3,6 +3,7 @@ package com.example.project2;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.project2.db.AppDatabase;
+import com.example.project2.db.WishlistItem;
 import com.example.project2.db.pokemon.Pokemon;
 import com.example.project2.db.pokemon.PokemonDao;
 import com.example.project2.db.pokemon.PokemonType;
@@ -222,6 +224,18 @@ public class SearchPokemonActivity extends AppCompatActivity {
                 pokemonWeightTextView.setText("Weight: " + pokemon.getWeight());
                 pokemonTypesTextView.setText("Types: " + String.join(", ", types));
                 pokedexEntryTextView.setText(pokemon.getPokedexEntry());
+                Button addBtn = findViewById(R.id.btnAddToWishlist);
+
+                addBtn.setOnClickListener(v -> {
+                    WishlistItem item = new WishlistItem(
+                            pokemon.getName(),
+                            pokemon.getSpriteUrl(),
+                            String.join(", ", types)
+                    );
+
+                    AppDatabase.getInstance(this).wishlistDao().insert(item);
+                });
+
 
                 Glide.with(this)
                      .load(pokemon.getSpriteUrl())

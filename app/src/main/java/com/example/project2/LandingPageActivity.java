@@ -1,7 +1,5 @@
 package com.example.project2;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,12 +8,22 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class LandingPageActivity extends AppCompatActivity {
 
     private TextView welcomeTextView;
-    private Button adminButton, logoutButton, randomPokemonButton, searchPokemonButton;
-    private Button pokemonByTypeButton, pokemonByRegionButton, generationSearchButton;
+    private Button adminButton;
+    private Button randomPokemonButton;
+    private Button searchPokemonButton;
+    private Button pokemonByTypeButton;
+    private Button pokemonByRegionButton;
+    private Button generationSearchButton;
+    private Button wishlistButton;
+    private Button teamBuilderButton;
+    private Button logoutButton;
     private EditText searchPokemonEditText;
 
     @Override
@@ -25,13 +33,15 @@ public class LandingPageActivity extends AppCompatActivity {
 
         welcomeTextView = findViewById(R.id.welcomeTextView);
         adminButton = findViewById(R.id.adminButton);
-        logoutButton = findViewById(R.id.logoutButton);
         randomPokemonButton = findViewById(R.id.randomPokemonButton);
         searchPokemonEditText = findViewById(R.id.searchPokemonEditText);
         searchPokemonButton = findViewById(R.id.searchPokemonButton);
         pokemonByTypeButton = findViewById(R.id.pokemonByTypeButton);
         pokemonByRegionButton = findViewById(R.id.pokemonByRegionButton);
         generationSearchButton = findViewById(R.id.generationSearchButton);
+        logoutButton = findViewById(R.id.logoutButton);
+        wishlistButton = findViewById(R.id.wishlistButton);
+        teamBuilderButton = findViewById(R.id.teamBuilderButton);
 
         SharedPreferences prefs = getSharedPreferences("UserSession", MODE_PRIVATE);
         String username = prefs.getString("username", "User");
@@ -43,7 +53,6 @@ public class LandingPageActivity extends AppCompatActivity {
             adminButton.setVisibility(View.VISIBLE);
         }
 
-        // Random Pokémon
         randomPokemonButton.setOnClickListener(v -> {
             startActivity(new Intent(LandingPageActivity.this, RandomPokemonActivity.class));
         });
@@ -70,24 +79,36 @@ public class LandingPageActivity extends AppCompatActivity {
             return false;
         });
 
-        pokemonByTypeButton.setOnClickListener(v -> {
-            startActivity(new Intent(LandingPageActivity.this, PokemonByTypeActivity.class));
-        });
+        pokemonByTypeButton.setOnClickListener(v ->
+                startActivity(new Intent(LandingPageActivity.this, PokemonByTypeActivity.class)));
 
-        pokemonByRegionButton.setOnClickListener(v -> {
-            startActivity(new Intent(LandingPageActivity.this, PokemonByRegionActivity.class));
-        });
+        pokemonByRegionButton.setOnClickListener(v ->
+                startActivity(new Intent(LandingPageActivity.this, PokemonByRegionActivity.class)));
 
-        generationSearchButton.setOnClickListener(v -> {
-            startActivity(new Intent(LandingPageActivity.this, GenerationSearchActivity.class));
-        });
+        generationSearchButton.setOnClickListener(v ->
+                startActivity(new Intent(LandingPageActivity.this, GenerationSearchActivity.class)));
+
+        wishlistButton.setOnClickListener(v ->
+                startActivity(new Intent(LandingPageActivity.this, WishlistActivity.class)));
+
+        teamBuilderButton.setOnClickListener(v ->
+                startActivity(new Intent(LandingPageActivity.this, TeamBuilderActivity.class)));
 
         logoutButton.setOnClickListener(v -> {
             SharedPreferences.Editor editor = prefs.edit();
             editor.clear();
             editor.apply();
-            startActivity(new Intent(LandingPageActivity.this, MainActivity.class));
+
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(LandingPageActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
             finish();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

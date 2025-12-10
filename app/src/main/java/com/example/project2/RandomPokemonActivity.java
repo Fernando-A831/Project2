@@ -1,16 +1,17 @@
 package com.example.project2;
 
-import androidx.appcompat.app.AppCompatActivity;
-import com.example.project2.db.pokemon.Region;
-
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.project2.db.AppDatabase;
+import com.example.project2.db.WishlistItem;
 import com.example.project2.db.pokemon.Pokemon;
 import com.example.project2.db.pokemon.PokemonDao;
 import com.example.project2.db.pokemon.PokemonType;
@@ -22,9 +23,11 @@ import com.example.project2.network.models.PokemonResponse;
 import com.example.project2.network.models.PokemonSpeciesResponse;
 import com.example.project2.network.models.PokemonTypeResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import retrofit2.Call;
@@ -33,14 +36,21 @@ import retrofit2.Response;
 
 public class RandomPokemonActivity extends AppCompatActivity {
 
-    private static final String TAG = "RandomPokemonActivity";
     private static final int MAX_POKEMON_ID = 1010;
+
     private ImageView pokemonSpriteImageView;
     private TextView pokemonNameTextView;
     private TextView pokemonHeightTextView;
     private TextView pokemonWeightTextView;
     private TextView pokemonTypesTextView;
     private TextView pokedexEntryTextView;
+    private Button addToWishlistButton;
+
+    // Wishlist integration fields
+    private ExecutorService executorService;
+    private String currentPokemonName;
+    private String currentPokemonImageUrl;
+    private String currentPokemonTypes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +65,14 @@ public class RandomPokemonActivity extends AppCompatActivity {
         pokedexEntryTextView = findViewById(R.id.pokedexEntryTextView);
         pokedexEntryTextView.setMovementMethod(new ScrollingMovementMethod());
 
+        addToWishlistButton = findViewById(R.id.btnAddToWishlist);
+
         pokemonNameTextView.setText("Loading...");
+
+        // Initialize executor for wishlist
+        executorService = Executors.newSingleThreadExecutor();
+        addToWishlistButton.setOnClickListener(v -> addToWishlist());
+
         fetchAndSaveRandomPokemon();
     }
 
@@ -64,8 +81,6 @@ public class RandomPokemonActivity extends AppCompatActivity {
 
         int randomId = new Random().nextInt(MAX_POKEMON_ID) + 1;
 
-        Log.d(TAG, "Random Pokémon ID: " + randomId);
-
         Call<PokemonResponse> pokemonCall = service.getPokemonById(randomId);
         Call<PokemonSpeciesResponse> speciesCall = service.getPokemonSpeciesById(randomId);
 
@@ -73,9 +88,7 @@ public class RandomPokemonActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> pokemonDetailsResponse) {
                 if (!pokemonDetailsResponse.isSuccessful() || pokemonDetailsResponse.body() == null) {
-                    Log.e(TAG, "Details error: code=" + pokemonDetailsResponse.code()
-                            + " message=" + pokemonDetailsResponse.message());
-                    handleFailure("Failed to load Pokémon details");
+                    pokemonNameTextView.setText("Failed to load Pokémon");
                     return;
                 }
 
@@ -83,9 +96,7 @@ public class RandomPokemonActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<PokemonSpeciesResponse> call, Response<PokemonSpeciesResponse> speciesDetailsResponse) {
                         if (!speciesDetailsResponse.isSuccessful() || speciesDetailsResponse.body() == null) {
-                            Log.e(TAG, "Species error: code=" + speciesDetailsResponse.code()
-                                    + " message=" + speciesDetailsResponse.message());
-                            handleFailure("Failed to load Pokémon species");
+                            pokemonNameTextView.setText("Failed to load species data");
                             return;
                         }
 
@@ -94,20 +105,17 @@ public class RandomPokemonActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<PokemonSpeciesResponse> call, Throwable t) {
-                        Log.e(TAG, "Species failure", t);
-                        handleFailure("Network Error (Species)");
+                        pokemonNameTextView.setText("Species fetch error");
                     }
                 });
             }
 
             @Override
             public void onFailure(Call<PokemonResponse> call, Throwable t) {
-                Log.e(TAG, "Details failure", t);
-                handleFailure("Network Error (Details)");
+                pokemonNameTextView.setText("Details fetch error");
             }
         });
     }
-
 
     private void saveDataAndDisplay(PokemonResponse pokemonResponse, PokemonSpeciesResponse speciesResponse) {
         Executor executor = Executors.newSingleThreadExecutor();
@@ -115,8 +123,7 @@ public class RandomPokemonActivity extends AppCompatActivity {
             AppDatabase db = AppDatabase.getInstance(getApplicationContext());
             PokemonDao dao = db.pokemonDao();
 
-            // Find the English Pokedex entry
-            String entry = "No English Pokédex entry found.";
+            String entry = "No English Pokédex entry.";
             for (FlavorTextEntry flavorText : speciesResponse.getFlavorTextEntries()) {
                 if (flavorText.getLanguage().getName().equals("en")) {
                     entry = flavorText.getFlavorText().replace('\n', ' ');
@@ -133,48 +140,125 @@ public class RandomPokemonActivity extends AppCompatActivity {
             pokemon.setPokedexEntry(entry);
             dao.insert(pokemon);
 
+            // Store types for wishlist
+            List<String> typeNames = new ArrayList<>();
+
             for (PokemonTypeResponse typeResponse : pokemonResponse.getTypes()) {
                 Type existingType = dao.getTypeByName(typeResponse.getType().getName());
                 long typeId;
+
                 if (existingType == null) {
                     Type newType = new Type();
                     newType.setName(typeResponse.getType().getName());
                     typeId = dao.insert(newType);
+                    typeNames.add(typeResponse.getType().getName());
                 } else {
                     typeId = existingType.getTypeId();
+                    typeNames.add(existingType.getName());
                 }
+
                 PokemonType pokemonType = new PokemonType();
                 pokemonType.setPokemonId(pokemon.getPokemonId());
                 pokemonType.setTypeId((int) typeId);
                 dao.insert(pokemonType);
             }
 
-            runOnUiThread(() -> displayPokemonFromDb(pokemon.getPokemonId()));
-        });
-    }
-
-    private void displayPokemonFromDb(int pokemonId) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            PokemonDao dao = AppDatabase.getInstance(getApplicationContext()).pokemonDao();
-            Pokemon pokemon = dao.getPokemonById(pokemonId);
-            List<String> types = dao.getTypesForPokemon(pokemonId);
+            // Store data for wishlist feature
+            String typesString = String.join(", ", typeNames);
 
             runOnUiThread(() -> {
-                pokemonNameTextView.setText(pokemon.getName());
-                pokemonHeightTextView.setText("Height: " + pokemon.getHeight());
-                pokemonWeightTextView.setText("Weight: " + pokemon.getWeight());
-                pokemonTypesTextView.setText("Types: " + String.join(", ", types));
-                pokedexEntryTextView.setText(pokemon.getPokedexEntry());
-
-                Glide.with(this)
-                     .load(pokemon.getSpriteUrl())
-                     .into(pokemonSpriteImageView);
+                displayPokemonFromDb(pokemon.getPokemonId());
+                storePokemonData(pokemon.getName(), pokemon.getSpriteUrl(), typeNames);
             });
         });
     }
 
-    private void handleFailure(String message) {
-        runOnUiThread(() -> pokemonNameTextView.setText(message));
-        Log.e(TAG, message);
+    private void displayPokemonFromDb(int pokemonId) {
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            AppDatabase db = AppDatabase.getInstance(getApplicationContext());
+            PokemonDao dao = db.pokemonDao();
+
+            Pokemon pokemon = dao.getPokemonById(pokemonId);
+
+            runOnUiThread(() -> {
+                if (pokemon == null) return;
+
+                pokemonNameTextView.setText(pokemon.getName());
+                pokemonHeightTextView.setText("Height: " + pokemon.getHeight());
+                pokemonWeightTextView.setText("Weight: " + pokemon.getWeight());
+                pokedexEntryTextView.setText(pokemon.getPokedexEntry());
+
+                Glide.with(this)
+                        .load(pokemon.getSpriteUrl())
+                        .into(pokemonSpriteImageView);
+            });
+        });
+    }
+
+    // Store Pokémon data for wishlist
+    private void storePokemonData(String name, String imageUrl, List<String> types) {
+        this.currentPokemonName = name;
+        this.currentPokemonImageUrl = imageUrl;
+
+        if (types != null && !types.isEmpty()) {
+            StringBuilder typesBuilder = new StringBuilder();
+            for (int i = 0; i < types.size(); i++) {
+                // Capitalize first letter
+                String type = types.get(i);
+                type = type.substring(0, 1).toUpperCase() + type.substring(1);
+                typesBuilder.append(type);
+                if (i < types.size() - 1) {
+                    typesBuilder.append(", ");
+                }
+            }
+            this.currentPokemonTypes = typesBuilder.toString();
+        } else {
+            this.currentPokemonTypes = "Unknown";
+        }
+    }
+
+    // Add to Wishlist functionality
+    private void addToWishlist() {
+        if (currentPokemonName == null || currentPokemonName.isEmpty()) {
+            Toast.makeText(this, "No Pokémon loaded!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        executorService.execute(() -> {
+            AppDatabase database = AppDatabase.getInstance(this);
+
+            // Check if already in wishlist
+            WishlistItem existing = database.wishlistDao().findByName(currentPokemonName);
+            if (existing != null) {
+                runOnUiThread(() ->
+                        Toast.makeText(this, currentPokemonName + " is already in your wishlist!",
+                                Toast.LENGTH_SHORT).show()
+                );
+                return;
+            }
+
+            // Create and insert new wishlist item
+            WishlistItem item = new WishlistItem(
+                    currentPokemonName,
+                    currentPokemonImageUrl,
+                    currentPokemonTypes
+            );
+
+            database.wishlistDao().insert(item);
+
+            runOnUiThread(() ->
+                    Toast.makeText(this, currentPokemonName + " added to wishlist!",
+                            Toast.LENGTH_SHORT).show()
+            );
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 }

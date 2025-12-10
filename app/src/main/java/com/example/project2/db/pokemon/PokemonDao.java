@@ -9,6 +9,7 @@ import java.util.List;
 
 @Dao
 public interface PokemonDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Pokemon... pokemon);
 
@@ -18,6 +19,9 @@ public interface PokemonDao {
     @Query("SELECT * FROM `type` WHERE name = :name")
     Type getTypeByName(String name);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(PokemonType... pokemonTypes);
+
     @Query("SELECT * FROM pokemon WHERE pokemon_id = :pokemonId")
     Pokemon getPokemonById(int pokemonId);
 
@@ -26,22 +30,4 @@ public interface PokemonDao {
 
     @Query("SELECT T.name FROM `type` T JOIN pokemon_type PT ON T.type_id = PT.type_id WHERE PT.pokemon_id = :pokemonId")
     List<String> getTypesForPokemon(int pokemonId);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Region... regions);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Move... moves);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(PokemonType... pokemonTypes);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(PokemonMove... pokemonMoves);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(Evolution... evolutions);
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insert(UserPokemonList... userPokemonLists);
 }
