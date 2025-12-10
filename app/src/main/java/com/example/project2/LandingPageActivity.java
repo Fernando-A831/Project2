@@ -79,7 +79,7 @@ public class LandingPageActivity extends AppCompatActivity {
             return false;
         });
 
-        pokemonByTypeButton.setOnClickListener(v ->
+       /** pokemonByTypeButton.setOnClickListener(v ->
                 startActivity(new Intent(LandingPageActivity.this, PokemonByTypeActivity.class)));
 
         pokemonByRegionButton.setOnClickListener(v ->
@@ -87,7 +87,7 @@ public class LandingPageActivity extends AppCompatActivity {
 
         generationSearchButton.setOnClickListener(v ->
                 startActivity(new Intent(LandingPageActivity.this, GenerationSearchActivity.class)));
-
+*/
         wishlistButton.setOnClickListener(v ->
                 startActivity(new Intent(LandingPageActivity.this, WishlistActivity.class)));
 
